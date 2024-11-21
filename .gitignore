@@ -105,3 +105,6 @@ tools/ffmpeg-release-*.tar.xz
 tools/Miniconda3-latest-*.sh
 tools/Miniforge3-*.sh
 tools/condarc
+
+venv
+espnet/tools/miniconda3/*

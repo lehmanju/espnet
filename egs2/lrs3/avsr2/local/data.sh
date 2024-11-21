@@ -11,15 +11,11 @@ log() {
 }
 
 . ./db.sh
-. ./path.sh
 
 cmd=run.pl
 nj=1 # number of GPUs to extract features
 stage=1
 stop_stage=4
-model_conf=$1
-
-echo "We use AV-HuBERT ${model_conf} configuration"
 
 log "$0 $*"
 . utils/parse_options.sh
@@ -37,7 +33,7 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     fi
 
     if [ ! -e data/test/text ]; then
-        python ./local/scp_gen.py --data_dir ${LRS3} --model ${model_conf}
+        python ./local/scp_gen.py --data_dir ${LRS3}
     fi
 
     for dataset in train val test; do
@@ -48,37 +44,6 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
         awk '{print $1, $1}' data/${dataset}/wav.scp > data/${dataset}/utt2spk
         utils/utt2spk_to_spk2utt.pl data/${dataset}/utt2spk > data/${dataset}/spk2utt || exit 1;
     done
-fi
-
-if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
-    # Download the pretrained AV-HuBERT model to extract visual features from official AV-HuBERT repository.
-    # https://facebookresearch.github.io/av_hubert/
-    mkdir -p local/pre-trained
-    if [ ! -f local/pre-trained/${model_conf}_vox_iter5.pt ]; then
-        echo "Download pre-trained model noise-pretrain/${model_conf}_vox_iter5.pt from https://facebookresearch.github.io/av_hubert/"
-        echo "If the download continues to fail, download it manually from the site."
-
-        wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 https://dl.fbaipublicfiles.com/avhubert/model/lrs3_vox/noise-pretrain/${model_conf}_vox_iter5.pt -O local/pre-trained/${model_conf}_vox_iter5.pt
-    fi
-fi
-
-if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
-    # Download extracted facial landmark to preprocess from the following repository.
-    # https://github.com/mpc001/Visual_Speech_Recognition_for_Multiple_Languages
-    if [ ! -e local/LRS3_landmarks ]; then
-        if python -c "import gdown" &> /dev/null; then
-            echo "requirements installed"
-        else
-            echo "please install required packages by run 'cd ../../../tools; source activate_python.sh; installers/install_visual.sh;'"
-            exit 1;
-        fi
-        echo "Download extracted landmark from https://drive.google.com/uc?id=1QRdOgeHvmKK8t4hsceFVf_BSpidQfUyW"
-        echo "If the download continues to fail, download it manually from the site & unzip at data/LRS3_landmarks."
-
-        gdown https://drive.google.com/uc?id=1QRdOgeHvmKK8t4hsceFVf_BSpidQfUyW -O local/LRS3_landmarks.zip --continue
-        unzip -qq local/LRS3_landmarks.zip
-        rm local/LRS3_landmarks.zip
-    fi
 fi
 
 if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then

@@ -93,9 +93,6 @@ def get_parser():
         description="Command-line script for preprocessing."
     )
     parser.add_argument("--data_dir", type=str, required=True, help="data_dir")
-    parser.add_argument(
-        "--model", type=str, required=True, help="AV-HuBERT model config"
-    )
     return parser
 
 

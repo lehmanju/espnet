@@ -1,6 +1,5 @@
 batch_type: folded
-batch_size: 16
-accum_grad: 1
+batch_size: 10
 max_epoch: 20
 patience: none
 # The initialization method for model parameters
@@ -13,21 +12,7 @@ keep_nbest_models: 10
 unused_parameters: true
 valid_batch_size: 4
 
-encoder: avhubert
-encoder_conf:
-    avhubert_url: https://dl.fbaipublicfiles.com/avhubert/model/lrs3_vox/noise-pretrain/base_vox_iter5.pt
-    avhubert_dir_path: ./local/pre-trained
-    encoder_embed_dim: 768
-    encoder_attention_heads: 12
-    encoder_ffn_embed_dim: 3072
-    encoder_layers: 12
-    dropout: 0.1
-    dropout_features: 0.1
-    encoder_layerdrop: 0.1
-    attention_dropout: 0.1
-    extracted: true
-    freeze_finetune_updates: 10000
-    feature_grad_mult: 1.0
+encoder: earlyfusion
 
 decoder: transformer
 decoder_conf:

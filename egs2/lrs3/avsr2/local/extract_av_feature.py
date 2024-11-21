@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
-from face_alignment import VideoProcess
+# from face_alignment import VideoProcess
 from python_speech_features import logfbank
 from scipy.io import wavfile
 from torchvision.models import resnet18, ResNet18_Weights
@@ -91,6 +91,7 @@ def per_file(f, args, model, writer, train):
     if not train :
         resized_vid = resized_vid[:, 5:-5, 5:-5]
 
+
     # (random) choice of 112x112 crop from video as mentioned in [1]
     else:
         x, y = randint(0, 10), randint(0, 10)
@@ -105,6 +106,7 @@ def per_file(f, args, model, writer, train):
 
     resized_vid = (resized_vid - torch.mean(resized_vid)) / torch.std(resized_vid)
 
+    print(resized_vid.shape)
 
     output = model.forward(vid)
     #output = video_process(vid, lm)

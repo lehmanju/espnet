@@ -106,5 +106,6 @@ tools/Miniconda3-latest-*.sh
 tools/Miniforge3-*.sh
 tools/condarc
 
-venv
-espnet/tools/miniconda3/*
+tools/miniconda3/
+
+venv/

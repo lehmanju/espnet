@@ -26,6 +26,27 @@ if [ -z "${LRS3}" ]; then
     exit 1
 fi
 
+
+if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
+    # Download the validation file list from AV-HuBERT github.
+    if [ ! -e local/lrs3-valid.id ]; then
+        wget -O local/lrs3-valid.id https://raw.githubusercontent.com/facebookresearch/av_hubert/main/avhubert/preparation/data/lrs3-valid.id
+    fi
+
+    if [ ! -e data/test/text ]; then
+        python ./local/scp_gen.py --data_dir ${LRS3}
+    fi
+
+    for dataset in train val test; do
+        if [ -e data/${dataset}/spk2utt ]; then
+            continue
+        fi
+        cp data/${dataset}/video.scp  data/${dataset}/wav.scp
+        awk '{print $1, $1}' data/${dataset}/wav.scp > data/${dataset}/utt2spk
+        utils/utt2spk_to_spk2utt.pl data/${dataset}/utt2spk > data/${dataset}/spk2utt || exit 1;
+    done
+fi
+
 if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
     # Extract audio visual features and fuse the two features using pre-trained AV-HuBERT front-ends
     if python -c "import skvideo, skimage, cv2, python_speech_features" &> /dev/null; then
